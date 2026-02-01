@@ -30,6 +30,8 @@ All hiding locations covered
 Direct URLs work perfectly
 Custom menu links blocked
 
+![NativeWP](https://github.com/vahidhodzic/woocommerce-frontend-migration-assignment/blob/main/Task%204%20%E2%80%93%20WooCommerce%20Custom%20Logic%20Scenario/Images(Screenshots)/%232.%20Solution%20-%20META%20(Native%20Wordpress).png)
+
 # 3. SOLUTION Admin Setting Page
 
 # SETUP
@@ -45,6 +47,8 @@ Bulk management - textarea input
 No per-category editing needed
 Perfect for agencies/marketing teams
 Visual preview + count verification
+
+![AdminPage](https://github.com/vahidhodzic/woocommerce-frontend-migration-assignment/blob/main/Task%204%20%E2%80%93%20WooCommerce%20Custom%20Logic%20Scenario/Images(Screenshots)/%233.%20Solution%20-Admin%20Setting%20Page.png)
 
 ---------------------------------------------------------
 
