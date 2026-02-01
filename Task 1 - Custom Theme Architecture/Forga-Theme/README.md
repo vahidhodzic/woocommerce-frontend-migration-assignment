@@ -73,7 +73,7 @@ You hand it off to another dev
 ├── single.php
 ├── archive.php
 └── README.md
-
+```
 ## 1. High-level structure
 
 - `assets/` – All static assets (CSS, JS, images).
