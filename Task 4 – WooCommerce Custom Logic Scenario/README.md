@@ -10,10 +10,10 @@ Field: True/False, Name="hide_in_listings", Styling+Toggle
 2. Copy ACF code to functions.php
 
 #   Features
-Products → Categories → Toggle switch appears
-Hide from: Shop page, menus, menu builder, admin menus
-Direct URLs /product-category/secret/ → Products show normally
-Custom links in menus → Auto-removed from frontend
+1. Products → Categories → Toggle switch appears
+2. Hide from: Shop page, menus, menu builder, admin menus
+3. Direct URLs /product-category/secret/ → Products show normally
+4. Custom links in menus → Auto-removed from frontend
 Zero performance impact (cached queries)
 
 ![ACF](https://github.com/vahidhodzic/woocommerce-frontend-migration-assignment/blob/main/Task%204%20%E2%80%93%20WooCommerce%20Custom%20Logic%20Scenario/Images(Screenshots)/%231.%20Solution%20-%20ACF.png)
