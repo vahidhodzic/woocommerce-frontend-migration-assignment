@@ -116,8 +116,6 @@ During final migration:
 
 ## Migration Flow Diagram
 
-```
-
 ┌──────────────────────┐
 │ Production (Headless)│
 │ - WPGraphQL/REST │
@@ -169,8 +167,6 @@ During final migration:
 │ - Restore DB Snapshot│
 │ - Resume Checkout │
 └─────────────────────┘
-
-```
 
 ## Key Principles
 - **Data-first**: Orders, products, users, stock never touched.
