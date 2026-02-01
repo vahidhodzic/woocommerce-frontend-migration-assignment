@@ -32,7 +32,7 @@
 ```
 
 Example single-product.php override or partials
-/woocommerce/single-product/content-single-product.php
+/woocommerce/content-single-product.php
 
 ```
 <?php
@@ -74,32 +74,58 @@ Usage of WooCommerce hooks
 
 ```
 <?php
+/**
+ * WooCommerce Single Product Hooks
+ * @package Forga
+ */
+if ( ! defined( 'ABSPATH' ) ) {
+    exit;
+}
+
 // Remove WooCommerce defaults
 remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_title', 5 );
 remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 );
+remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_rating', 15 );
+remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_add_to_cart', 30 );
+remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 );
 
-// Custom hooks (priority = visual order)
+// Custom hooks with priority order
 add_action( 'woocommerce_single_product_summary', 'forga_product_title', 5 );
 function forga_product_title() {
     global $product;
-    $title = $product->get_name();
-    if ( $product->is_on_sale() ) $title .= ' <span class="sale-badge">Sale</span>';
-    printf( '<h1 class="product_title">%s</h1>', esc_html( $title ) );
+    echo '<h1 class="product_title">' . esc_html( $product->get_name() );
+    if ( $product->is_on_sale() ) {
+        echo ' <span class="sale-badge">Sale</span>';
+    }
+    echo '</h1>';
 }
 
 add_action( 'woocommerce_single_product_summary', 'forga_product_price', 10 );
 function forga_product_price() {
-    wc_get_template_part( 'single-product/add-to-cart/price' );
+    wc_get_template_part( 'single-product/price' );
+}
+
+add_action( 'woocommerce_single_product_summary', 'forga_product_short_description', 20 );
+function forga_product_short_description() {
+    woocommerce_template_single_excerpt();
 }
 
 add_action( 'woocommerce_single_product_summary', 'forga_product_add_to_cart', 30 );
 function forga_product_add_to_cart() {
     global $product;
-    $template = $product->is_type( 'simple' )
+    if ( ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+        return;
+    }
+    $add_to_cart_path = $product->is_type( 'simple' )
         ? 'single-product/add-to-cart/simple'
         : 'single-product/add-to-cart/variable';
-    wc_get_template_part( $template );
+    wc_get_template_part( $add_to_cart_path );
+}
+
+add_action( 'woocommerce_single_product_summary', 'forga_product_meta', 40 );
+function forga_product_meta() {
+    woocommerce_template_single_meta();
 }
 
 // Gallery wrapper
@@ -109,7 +135,6 @@ function forga_gallery_wrapper() {
     woocommerce_show_product_images();
     echo '</div>';
 }
-?>
 ```
 
 Add-to-cart handling for simple and variable products
@@ -118,13 +143,14 @@ Add-to-cart handling for simple and variable products
 ```
 <?php
 /**
- * Simple product add-to-cart form
+ * Simple Product Add to Cart
  */
 global $product;
-if ( $product->is_purchasable() && $product->is_in_stock() ) :
-    woocommerce_simple_add_to_cart(); // Quantity + AJAX button
-endif;
+if ( $product && $product->is_type( 'simple' ) ) {
+    woocommerce_simple_add_to_cart();
+}
 ?>
+
 
 
 ```
@@ -133,11 +159,14 @@ endif;
 ```
 <?php
 /**
- * Variable product add-to-cart form
+ * Variable Product Add to Cart
  */
 global $product;
-woocommerce_variable_add_to_cart(); // Dropdowns + validation + AJAX
+if ( $product && $product->is_type( 'variable' ) ) {
+    woocommerce_variable_add_to_cart();
+}
 ?>
+
 
 ```
 
@@ -145,9 +174,15 @@ Dynamic Detection Logic:
 
 ```
 // In woocommerce-hooks.php
-$template = $product->is_type( 'simple' )
-    ? 'single-product/add-to-cart/simple'
-    : 'single-product/add-to-cart/variable';
-wc_get_template_part( $template );
+function forga_product_add_to_cart() {
+    global $product;
+    if ( ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+        return;
+    }
+    $add_to_cart_path = $product->is_type( 'simple' )
+        ? 'single-product/add-to-cart/simple'
+        : 'single-product/add-to-cart/variable';
+    wc_get_template_part( $add_to_cart_path );
+}
 
 ```
