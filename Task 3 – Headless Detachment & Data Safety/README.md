@@ -115,7 +115,7 @@ During final migration:
 - Minimal ranking impact.
 
 ## Migration Flow Diagram
-
+```
 ┌──────────────────────┐
 │ Production (Headless)│
 │ - WPGraphQL/REST │
@@ -167,7 +167,7 @@ During final migration:
 │ - Restore DB Snapshot│
 │ - Resume Checkout │
 └─────────────────────┘
-
+```
 ## Key Principles
 - **Data-first**: Orders, products, users, stock never touched.
 - **Frontend swap-only**: Changes limited to presentation layer.
