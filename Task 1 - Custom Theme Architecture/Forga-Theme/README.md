@@ -1,14 +1,78 @@
-# Forga-Theme – WooCommerce Custom Theme Architecture
+# Forga Theme – WooCommerce Custom Theme Architecture
 
 This document explains the structure and responsibilities of the **Forga-Theme** WordPress theme, designed for a WooCommerce store. The focus is on clear separation of concerns, maintainability, and compatibility with WooCommerce updates.
 
+Assets are enqueued centrally through inc/setup/enqueue.php using WordPress best practices. WooCommerce customizations live in dedicated inc/woocommerce/ and woocommerce/ folders. Logic stays decoupled via hooks and helper functions, keeping templates clean.
+
+
+WooCommerce Customizations Location
+Template (woocommerce/single-product.php)
+         ↓ Calls hooks
+Hooks (inc/hooks/woocommerce-hooks.php)
+         ↓ Calls functions
+Functions (inc/woocommerce/product-functions.php)
+         ↓ Uses helpers
+Helpers (inc/helpers/formatting.php) → Pure data
+
+
+Good documentation:
 Someone else touches the theme later
-
-You revisit it in 6–12 months
-
+You revisit it in 3–4 months
 You hand it off to another dev
 
----
+
+├── assets/
+│   ├── css/
+│   │   ├── main.css
+│   │   └── woocommerce.css
+│   ├── js/
+│   │   ├── main.js
+│   │   └── product.js
+│   └── images/
+│
+├── inc/
+│   ├── setup/
+│   │   ├── theme-setup.php
+│   │   ├── enqueue.php
+│   │   └── woocommerce-support.php
+│   │
+│   ├── helpers/
+│   │   ├── formatting.php
+│   │   └── utilities.php
+│   │
+│   ├── hooks/
+│   │   ├── global-hooks.php
+│   │   └── woocommerce-hooks.php
+│   │
+│   └── woocommerce/
+│       ├── product-functions.php
+│       ├── cart-functions.php
+│       └── checkout-functions.php
+│
+├── woocommerce/
+│   ├── single-product.php
+│   ├── content-single-product.php
+│   └── single-product/
+│       ├── price.php
+│       ├── add-to-cart/
+│       │   ├── simple.php
+│       │   └── variable.php
+│
+├── template-parts/
+│   ├── header/
+│   ├── footer/
+│   └── product/
+│       └── product-summary.php
+│
+├── functions.php
+├── style.css
+├── index.php
+├── header.php
+├── footer.php
+├── page.php
+├── single.php
+├── archive.php
+└── README.md
 
 ## 1. High-level structure
 
@@ -16,7 +80,7 @@ You hand it off to another dev
 - `inc/` – PHP logic: setup, helpers, hooks, and WooCommerce-specific functionality.
 - `woocommerce/` – WooCommerce template overrides.
 - `template-parts/` – Reusable partial templates.
-- Root templates (`page.php`, `single.php`, `archive.php`, `index.php`) – Core WordPress template hierarchy.
+- Root templates (`page.php`, `single.php`, `archive.php`, `index.php`, header.php, footer.php) – Core WordPress template hierarchy.
 - `functions.php` – Theme bootstrap.
 - `style.css` – Theme stylesheet and header metadata.
 - `README.md` – This documentation.
@@ -203,3 +267,99 @@ Reusable partials that can be loaded with `get_template_part()` or via hooks.
 - Template overrides in `woocommerce/` are kept as small and focused as possible, preserving standard WooCommerce hooks and core behavior.
 - Add-to-cart handling for simple and variable products primarily leverages WooCommerce’s default mechanisms, with layout and UX enhancements added via hooks and minimal template overrides.
 - This structure minimizes maintenance overhead and reduces the risk of breakage when WooCommerce updates its internal templates or logic.
+
+
+------------------------------------------------------------------------------
+Tight coupling occurs when business logic gets mixed directly into template files, making them bloated, hard to test, and difficult to maintain. This theme structure completely separates concerns using a layered approach.
+
+The Problem
+Imagine a product page template that calculates discounts, checks stock levels, determines sale badges, and formats prices all within the same file. If business rules change (like sale badge thresholds), you'd need to hunt through dozens of templates to update them. Plus, you couldn't test the logic independently.
+
+The Solution: 4-Layer Separation
+1. Templates (Dumb Display Layer)
+Templates only handle presentation—they show content and trigger standardized hook points where other code can attach functionality. They never contain if/then logic, calculations, or business rules.
+
+2. Hooks (Traffic Director Layer)
+Hooks act as thin connectors between templates and logic. They receive the "signal" from templates and decide which specific function to call based on context, but they don't contain business logic themselves.
+
+3. Functions (Business Logic Layer)
+All decision-making lives here—what badges to show, how to calculate discounts, when to display special pricing. These functions contain the complete business rules and can be unit tested independently.
+
+4. Helpers (Pure Data Layer)
+The deepest layer handles raw data transformations like math calculations, string formatting, and data validation. These are pure functions with no WordPress dependencies, making them reusable anywhere.
+
+How It Works in Practice
+When a product page loads:
+
+Template displays basic structure and fires a hook signal
+
+Hook catches the signal and calls the appropriate product badge function
+
+Function applies business rules (sale status, discount thresholds, stock levels)
+
+Function calls helper for pure math (discount percentage calculation)
+
+Result bubbles back up through clean layers to display in template
+
+Directory Structure Enforces This
+woocommerce/ and template-parts/ = Templates only (visual layer)
+
+inc/hooks/ = Hook connections only (traffic directors)
+
+inc/woocommerce/ = All business decisions (logic layer)
+
+inc/helpers/ = Pure calculations (data layer)
+
+Real Benefits
+Change business rules once: Modify discount logic in inc/woocommerce/product-functions.php—every template updates automatically.
+
+Templates stay lean: Product templates are under 50 lines, just structure + hook calls.
+
+Testable logic: Business functions work without WordPress context, enabling proper unit tests.
+
+Plugin safe: Other plugins can hook into the same points without conflicts.
+
+Scalable: Add new product types or pricing rules without touching visual files.
+
+The result is a surgical separation where presentation, flow control, business rules, and data processing each live in their proper place—making the entire codebase maintainable and professional.
+
+
+Decoupled Architecture
+Templates ← Hooks ← Functions ← Helpers
+  (Dumb)     (Thin)    (Logic)   (Pure Data)
+
+
+Real-World Flow Example
+1. single-product.php calls: do_action( 'custom_product_badges' )
+2. Hook triggers: show_product_badge()
+3. Function checks: get_product_badge( $product )
+4. Logic decides: calculate_discount_percentage( $product )
+5. Helper returns: 25%
+6. Function returns: 'MEGA SALE'
+7. Hook renders: <span>MEGA SALE</span>
+8. Template displays: Clean HTML
+
+Key Benefits
+Untestable templates	->Logic extracted to plain PHP functions
+Hard-coded rules ->	Business logic centralized in inc/woocommerce/
+Template bloat	-> Templates < 50 lines, just do_action() calls
+Poor maintainability	-> Change discount logic in ONE file
+Plugin conflicts	-> Hooks respect WooCommerce hook priority system
+
+Directory Separation Enforces Discipline
+
+inc/hooks/           ← Template → Hook connections
+inc/woocommerce/     ← All WooCommerce business logic
+inc/helpers/         ← Pure data transformations
+woocommerce/         ← Visual templates ONLY
+template-parts/      ← Reusable dumb components
+
+
+FOR BADGES EXAMPLE:
+├── woocommerce/single-product.php          ← 1 hook line
+├── inc/hooks/woocommerce-hooks.php         ← 1 hook function
+└── inc/woocommerce/product-functions.php   ← All badge logic
+
+Result: Change product badge logic in product-functions.php → instantly updates ALL templates.
+No template edits needed. Zero coupling.
+
