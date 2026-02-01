@@ -1,4 +1,4 @@
-<?
+<?php
 /**
  * Hide Product Categories with Checkbox - MANUAL URLS WORK
  */
@@ -23,16 +23,18 @@ add_action('product_cat_edit_form_fields', function($term) {
     </tr>
 <?php });
 
-// 2. SAVE CHECKBOX VALUE (unchanged)
+// 2. SAVE CHECKBOX VALUE (with nonce verification)
 add_action('created_product_cat', function($term_id) {
-    if (isset($_POST['hide_in_listings'])) {
+    if (isset($_POST['hide_in_listings']) && check_admin_referer('update-tag_' . $term_id)) {
         update_term_meta($term_id, 'hide_in_listings', 1);
     }
 }, 10, 1);
 
 add_action('edited_product_cat', function($term_id) {
-    $value = isset($_POST['hide_in_listings']) ? 1 : 0;
-    update_term_meta($term_id, 'hide_in_listings', $value);
+    if (check_admin_referer('update-tag_' . $term_id)) {
+        $value = isset($_POST['hide_in_listings']) ? 1 : 0;
+        update_term_meta($term_id, 'hide_in_listings', $value);
+    }
 }, 10, 1);
 
 // 3. HELPER FUNCTION (unchanged)
@@ -75,18 +77,6 @@ add_action('pre_get_posts', function($query) {
     }
 });
 
-// 5-7. All other filters unchanged (menus + admin work perfectly)
-add_filter('wp_get_nav_menu_items', function($items, $menu, $args) {
-    $hidden_ids = get_hidden_product_cat_ids();
-    if (!empty($hidden_ids)) {
-        foreach ($items as $key => $item) {
-            if ($item->object === 'product_cat' && in_array($item->object_id, $hidden_ids)) {
-                unset($items[$key]);
-            }
-        }
-    }
-    return array_values($items);
-}, 10, 3);
 
 add_filter('wp_nav_menu_terms_checklist_args', function($args, $post_id) {
     if (isset($args['taxonomy']) && $args['taxonomy'] === 'product_cat') {

@@ -1,4 +1,4 @@
-<?
+<?php
 // 1. ADMIN SETTINGS PAGE
 add_action('admin_menu', function() {
     add_submenu_page('edit.php?post_type=product', 'Hidden Categories', 'Hidden Cats', 'manage_options', 'hidden-product-cats', 'hidden_cats_admin_page');
@@ -138,4 +138,3 @@ add_filter('get_terms', function($terms, $taxonomies, $args) {
     }
     return array_values($terms);
 }, 5, 3);
-?>
