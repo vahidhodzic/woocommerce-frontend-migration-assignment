@@ -1,0 +1,23 @@
+.forga-single-product-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.product-gallery-wrapper .woocommerce-product-gallery {
+    opacity: 1 !important;
+}
+
+.forga-product-price {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 1rem 0;
+}
+
+.sale-badge {
+    background: #ff4444;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+}
