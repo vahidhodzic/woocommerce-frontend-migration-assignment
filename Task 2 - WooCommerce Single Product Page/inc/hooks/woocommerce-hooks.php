@@ -19,11 +19,11 @@ remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_singl
 add_action( 'woocommerce_single_product_summary', 'forga_product_title', 5 );
 function forga_product_title() {
     global $product;
-    $title = $product->get_name();
+    echo '<h1 class="product_title">' . esc_html( $product->get_name() );
     if ( $product->is_on_sale() ) {
-        $title .= ' <span class="sale-badge">Sale</span>';
+        echo ' <span class="sale-badge">Sale</span>';
     }
-    printf( '<h1 class="product_title">%s</h1>', esc_html( $title ) );
+    echo '</h1>';
 }
 
 add_action( 'woocommerce_single_product_summary', 'forga_product_price', 10 );

@@ -3,7 +3,7 @@
  * Simple Product Add to Cart
  */
 global $product;
-if ( $product->is_purchasable() && $product->is_in_stock() ) :
+if ( $product && $product->is_type( 'simple' ) ) {
     woocommerce_simple_add_to_cart();
-endif;
+}
 ?>
