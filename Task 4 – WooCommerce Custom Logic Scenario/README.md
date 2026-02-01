@@ -16,7 +16,7 @@ Direct URLs /product-category/secret/ → Products show normally
 Custom links in menus → Auto-removed from frontend
 Zero performance impact (cached queries)
 
-![ACF - Solution screenshot) (https://github.com/vahidhodzic/woocommerce-frontend-migration-assignment/blob/main/Task%204%20%E2%80%93%20WooCommerce%20Custom%20Logic%20Scenario/Images(Screenshots)/%231.%20Solution%20-%20ACF.png)
+![ACF](https://github.com/vahidhodzic/woocommerce-frontend-migration-assignment/blob/main/Task%204%20%E2%80%93%20WooCommerce%20Custom%20Logic%20Scenario/Images(Screenshots)/%231.%20Solution%20-%20ACF.png)
 # 2. SOLUTION META (Native Wordpress)
 
 # SETUP
