@@ -20,7 +20,7 @@ Someone else touches the theme later
 You revisit it in 3–4 months
 You hand it off to another dev
 
-
+```tree
 ├── assets/
 │   ├── css/
 │   │   ├── main.css
