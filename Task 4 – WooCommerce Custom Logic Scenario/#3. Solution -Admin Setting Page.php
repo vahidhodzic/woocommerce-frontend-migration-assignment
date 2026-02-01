@@ -5,8 +5,11 @@ add_action('admin_menu', function() {
 });
 
 function hidden_cats_admin_page() {
-    // FIXED: Handle textarea input properly
+    // FIXED: Handle textarea input properly with nonce verification
     if (isset($_POST['save_hidden_cats'])) {
+        if (!isset($_POST['hidden_cats_nonce']) || !wp_verify_nonce($_POST['hidden_cats_nonce'], 'hidden_cats_save')) {
+            wp_die('Security check failed');
+        }
         $input = sanitize_textarea_field($_POST['categories']);
         $categories = array_filter(array_map('trim', explode("\n", $input)));
         update_option('hidden_product_categories', $categories);
@@ -53,7 +56,7 @@ function hidden_cats_admin_page() {
     <?php
 }
 
-// 2. CUSTOM QUERY HELPER - FIXED
+// 2. CUSTOM QUERY HELPER - FIXED with improved security
 function get_hidden_categories($return = 'ids') {
     static $cache = [];
     $hash = md5($return);
@@ -66,14 +69,17 @@ function get_hidden_categories($return = 'ids') {
         }
 
         global $wpdb;
-        $slugs_placeholder = implode("','", array_fill(0, count($slugs), '%s'));
-        $ids = $wpdb->get_col($wpdb->prepare("
-            SELECT t.term_id
+        // Build placeholders safely
+        $placeholders = implode(', ', array_fill(0, count($slugs), '%s'));
+        $query = $wpdb->prepare(
+            "SELECT t.term_id
             FROM {$wpdb->terms} t
             INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
             WHERE tt.taxonomy = 'product_cat'
-            AND t.slug IN ($slugs_placeholder)
-        ", ...$slugs));
+            AND t.slug IN ($placeholders)",
+            $slugs
+        );
+        $ids = $wpdb->get_col($query);
 
         $cache[$hash] = $ids ?: [];
     }

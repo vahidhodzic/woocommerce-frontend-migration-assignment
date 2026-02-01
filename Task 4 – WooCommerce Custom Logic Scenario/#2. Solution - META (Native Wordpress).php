@@ -77,7 +77,7 @@ add_action('pre_get_posts', function($query) {
     }
 });
 
-
+// 5. HIDE FROM MENU BUILDER
 add_filter('wp_nav_menu_terms_checklist_args', function($args, $post_id) {
     if (isset($args['taxonomy']) && $args['taxonomy'] === 'product_cat') {
         $hidden_ids = get_hidden_product_cat_ids();
@@ -90,6 +90,7 @@ add_filter('wp_nav_menu_terms_checklist_args', function($args, $post_id) {
     return $args;
 }, 10, 2);
 
+// 6. HIDE FROM ADMIN MENUS SCREEN
 add_filter('get_terms', function($terms, $taxonomies, $args) {
     if (!is_admin()) return $terms;
     global $pagenow;
@@ -108,8 +109,7 @@ add_filter('get_terms', function($terms, $taxonomies, $args) {
     return array_values($terms);
 }, 5, 3);
 
-
-// 8. HIDE CUSTOM LINKS to hidden categories from frontend menus
+// 7. HIDE PRODUCT CATEGORIES AND CUSTOM LINKS FROM FRONTEND MENUS
 add_filter('wp_get_nav_menu_items', function($items, $menu, $args) {
     $hidden_ids = get_hidden_product_cat_ids();
     if (!empty($hidden_ids)) {
