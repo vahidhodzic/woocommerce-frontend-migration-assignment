@@ -1,0 +1,20 @@
+/*
+Theme Name: Forga
+Author: Vahid Hodzic
+Author URI: http://vahidhodzic.github.io/
+Description: Forga is a custom, performance-focused WordPress theme built for WooCommerce and the Gutenberg editor.
+Version: 1.0.0
+Requires at least: 6.0
+Tested up to: 6.4
+Requires PHP: 8.0
+License: GNU General Public License v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: forga
+Tags: custom-theme, woocommerce, gutenberg, full-width
+*/
+
+/*
+IMPORTANT:
+This file is intentionally minimal.
+All actual styles live in /assets/css/
+*/
